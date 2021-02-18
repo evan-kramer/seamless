@@ -6,7 +6,6 @@ Pull Data from Seamless
 """
 # Import modules
 import os, requests, hashlib, hmac, time
-# from urllib.request import urlopen, Request
 import pandas as pd
 
 timestamp = time.time()
@@ -34,16 +33,33 @@ headers = {
     'Cache-Control': 'no-cache'
 }
 r = requests.get(url, headers = headers)
-# print(r.content)
 
 try:
     forms = pd.json_normalize(r.json()['items'])
 except:
     pass
 
-# Get form elements
-# print(get_signature(domain, url, 'GET', uri))
-# https://www.freeformatter.com/hmac-generator.html#ad-output
+# Form pipeline
+uri = '/form/{form_id}/pipeline'.format(form_id = forms.form_id[24])
+url = 'https://{domain}.seamlessdocs.com/api{uri}'.format(domain = domain,
+                                                          uri = uri)
+headers = {
+    'Content-Type': 'application/json',
+    'Authorization': 'api_key={} signature={}'.format(os.getenv('seamless_api_key'),
+                                                      get_signature(domain, 
+                                                                    url,
+                                                                    "GET",
+                                                                    uri)),
+    'AuthDate': str(round(timestamp)),
+    'Cache-Control': 'no-cache'
+}
+r = requests.get(url, headers = headers)
+try:
+    pipeline = pd.json_normalize(r.json()['items'])
+except:
+    pass
+
+
 
 
 # Budget package requests
