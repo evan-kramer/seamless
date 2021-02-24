@@ -61,9 +61,14 @@ except:
     pass
 
 
-forms.item_name
-search_string = '^Budget Routing | ^Data Sharing Agreement | ^OSSE Direct Voucher | ^Document Routing | ^OSSE New Hire Onboarding | ^OSSE MOU Routing | ^OSSE Contract | ^OSSE P\-CARD | ^OSSE Recruitment Request'
-[i for i in list(forms.item_name) if re.search(search_string, i)]
+search_string = ['^Budget Routing', '^Data Sharing Agreement', '^OSSE Direct Voucher', 
+                 '^Document Routing', '^OSSE New Hire Onboarding', '^OSSE MOU Routing', 
+                 '^OSSE Contract', '^OSSE P\-CARD', '^OSSE Recruitment Request']
+for s in search_string:
+    print([i for i in list(forms.item_name) if re.search(s, i)])
+    print([i for i in list(forms.form_id) if re.search(s, i)])
+    
+
 
 
 
