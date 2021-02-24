@@ -65,12 +65,10 @@ search_string = ['^Budget Routing', '^Data Sharing Agreement', '^OSSE Direct Vou
                  '^Document Routing', '^OSSE New Hire Onboarding', '^OSSE MOU Routing', 
                  '^OSSE Contract', '^OSSE P\-CARD', '^OSSE Recruitment Request']
 for s in search_string:
-    print([i for i in list(forms.item_name) if re.search(s, i)])
-    print([i for i in list(forms.form_id) if re.search(s, i)])
-    
-
-
-
+    for i in list(forms.item_name):
+        if re.search(s, i):
+            form_dict[i] = forms.form_id[forms.item_name == i].to_string(index = False)
+print(form_dict)
 
 
 # Budget package requests
