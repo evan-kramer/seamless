@@ -5,7 +5,7 @@ Created on Thu Jan 28 22:12:45 2021
 Pull Data from Seamless
 """
 # Import modules
-import os, requests, hashlib, hmac, time
+import os, requests, hashlib, hmac, time, re
 import pandas as pd
 
 timestamp = time.time()
@@ -18,6 +18,7 @@ def get_signature(domain, url, method, uri):
     return signature
 
 # Get all forms
+form_dict = {}
 domain = 'dcgov'
 uri = '/account/forms'
 url = 'https://{domain}.seamlessdocs.com/api{uri}'.format(domain = domain, 
@@ -33,11 +34,11 @@ headers = {
     'Cache-Control': 'no-cache'
 }
 r = requests.get(url, headers = headers)
-
 try:
     forms = pd.json_normalize(r.json()['items'])
 except:
     pass
+
 
 # Form pipeline
 uri = '/form/{form_id}/pipeline'.format(form_id = forms.form_id[24])
@@ -60,10 +61,16 @@ except:
     pass
 
 
+forms.item_name
+search_string = '^Budget Routing | ^Data Sharing Agreement | ^OSSE Direct Voucher | ^Document Routing | ^OSSE New Hire Onboarding | ^OSSE MOU Routing | ^OSSE Contract | ^OSSE P\-CARD | ^OSSE Recruitment Request'
+[i for i in list(forms.item_name) if re.search(search_string, i)]
+
+
 
 
 # Budget package requests
 # Data sharing agreement requests
+forms.form_id[forms.item_name == 'Data Sharing Agreement Routing Form']
 # Direct voucher requests
 # General document routing requests
 # HR onboarding requests
