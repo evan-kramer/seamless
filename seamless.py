@@ -18,7 +18,6 @@ def get_signature(domain, url, method, uri):
     return signature
 
 # Get all forms
-form_dict = {}
 domain = 'dcgov'
 uri = '/account/forms'
 url = 'https://{domain}.seamlessdocs.com/api{uri}'.format(domain = domain, 
@@ -39,45 +38,37 @@ try:
 except:
     pass
 
-
 # Form pipeline
-uri = '/form/{form_id}/pipeline'.format(form_id = forms.form_id[24])
-url = 'https://{domain}.seamlessdocs.com/api{uri}'.format(domain = domain,
-                                                          uri = uri)
-headers = {
-    'Content-Type': 'application/json',
-    'Authorization': 'api_key={} signature={}'.format(os.getenv('seamless_api_key'),
-                                                      get_signature(domain, 
-                                                                    url,
-                                                                    "GET",
-                                                                    uri)),
-    'AuthDate': str(round(timestamp)),
-    'Cache-Control': 'no-cache'
-}
-r = requests.get(url, headers = headers)
-try:
-    pipeline = pd.json_normalize(r.json()['items'])
-except:
-    pass
-
-
 search_string = ['^Budget Routing', '^Data Sharing Agreement', '^OSSE Direct Voucher', 
                  '^Document Routing', '^OSSE New Hire Onboarding', '^OSSE MOU Routing', 
                  '^OSSE Contract', '^OSSE P\-CARD', '^OSSE Recruitment Request']
+
+# Loop overall forms
 for s in search_string:
     for i in list(forms.item_name):
         if re.search(s, i):
-            form_dict[i] = forms.form_id[forms.item_name == i].to_string(index = False)
-print(form_dict)
-
-
-# Budget package requests
-# Data sharing agreement requests
-forms.form_id[forms.item_name == 'Data Sharing Agreement Routing Form']
-# Direct voucher requests
-# General document routing requests
-# HR onboarding requests
-# MOU routing requests
-# OCP contract cert requests
-# Pcard requests
-# Priority hire requests
+            # Capture form_id
+            form_id = forms.form_id[forms.item_name == i].to_string(index = False)
+            # URI and URL
+            uri = '/form/{form_id}/pipeline'.format(form_id = form_id)
+            url = 'https://{domain}.seamlessdocs.com/api{uri}'.format(domain = domain,
+                                                                      uri = uri)
+            # Define headers
+            headers = {
+                'Content-Type': 'application/json',
+                'Authorization': 'api_key={} signature={}'.format(os.getenv('seamless_api_key'),
+                                                                  get_signature(domain, 
+                                                                                url,
+                                                                                "GET",
+                                                                                uri)),
+                'AuthDate': str(round(timestamp)),
+                'Cache-Control': 'no-cache'
+            }
+            # Send request, convert to dataframe, and save
+            r = requests.get(url, headers = headers)
+            try:
+                pipeline = pd.json_normalize(r.json()['items'])
+                pipeline.to_csv('C:/Users/evan.kramer/OneDrive - Government of The District of Columbia/Seamless Data/{i}.csv'.format(i = i), 
+                                index = False)
+            except:
+                pass
