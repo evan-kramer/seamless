@@ -64,11 +64,19 @@ for s in search_string:
                 'AuthDate': str(round(timestamp)),
                 'Cache-Control': 'no-cache'
             }
+            params = {'limit':'10000'}
             # Send request, convert to dataframe, and save
-            r = requests.get(url, headers = headers)
+            r = requests.get(url, headers = headers, params = params)
             try:
                 pipeline = pd.json_normalize(r.json()['items'])
                 pipeline.to_csv('C:/Users/evan.kramer/OneDrive - Government of The District of Columbia/Seamless Data/{i}.csv'.format(i = i), 
                                 index = False)
             except:
                 pass
+            
+# Check whether limiting worked
+file_list = os.listdir('C:/Users/evan.kramer/OneDrive - Government of The District of Columbia/Seamless Data')
+for f in file_list:
+    temp = pd.read_csv('C:/Users/evan.kramer/OneDrive - Government of The District of Columbia/Seamless Data/{f}'.format(f = f))
+    print(f)
+    print(len(temp))
