@@ -65,21 +65,29 @@ for s in search_string:
                 'Cache-Control': 'no-cache'
             }
             # Send request, convert to dataframe, and save
-            r = requests.get(url, headers = headers, 
-                             params = {'limit': 100})
-            try:
-                # varnames = pd.json_normalize(r.json())
-                pipeline = pd.json_normalize(r.json()['items'])
-                pipeline.to_csv('C:/Users/evan.kramer/OneDrive - Government of The District of Columbia/Seamless Data/{i}.csv'.format(i = i), 
-                                index = False)
-            except:
-                pass
+            r = requests.get(url, headers = headers)
+            pipeline = pd.DataFrame()
+            
+            # Create breaks
+            for j in range(0, (r.json()['items_count'] // 50 + 1) * 50, 50):
+                try:
+                    r = requests.get(url, headers = headers, 
+                                     params = {'offset': j})
+                    pipeline = pipeline.append(pd.json_normalize(r.json()['items']))
+                except:
+                    pass    
+            pipeline.to_csv('C:/Users/evan.kramer/OneDrive - Government of The District of Columbia/Seamless Data/{i}.csv'.format(i = i), 
+                            index = False)           
             
 # Check whether limiting worked
 file_list = os.listdir('C:/Users/evan.kramer/OneDrive - Government of The District of Columbia/Seamless Data')
 for f in file_list:
-    temp = pd.read_csv('C:/Users/evan.kramer/OneDrive - Government of The District of Columbia/Seamless Data/{f}'.format(f = f))
-    print(f)
-    print(len(temp))
-    
-print(r.url)
+    if '.csv' in f:
+        try:
+            temp = pd.read_csv('C:/Users/evan.kramer/OneDrive - Government of The District of Columbia/Seamless Data/{f}'.format(f = f))
+            print(f)
+            print(len(temp))
+        except:
+            pass
+    else:
+        pass
