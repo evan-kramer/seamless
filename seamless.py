@@ -41,7 +41,9 @@ except:
 # Form pipeline
 search_string = ['^Budget Routing', '^Data Sharing Agreement', '^OSSE Direct Voucher', 
                  '^Document Routing', '^OSSE New Hire Onboarding', '^OSSE MOU Routing', 
-                 '^OSSE Contract', '^OSSE P\-CARD', '^OSSE Recruitment Request']
+                 '^OSSE Contract', '^OSSE P\-CARD', '^OSSE Recruitment Request', 
+                 '^OSSE Parking']
+# [(s, i) for s in search_string for i in list(forms.item_name) if re.search(s, i)]
 
 # Loop overall forms
 for s in search_string:
@@ -76,8 +78,8 @@ for s in search_string:
                     pipeline = pipeline.append(pd.json_normalize(r.json()['items']))
                 except:
                     pass    
-            pipeline.to_csv('C:/Users/evan.kramer/OneDrive - Government of The District of Columbia/Seamless Data/{i}.csv'.format(i = i), 
-                            index = False)           
+            pipeline.to_excel('C:/Users/evan.kramer/OneDrive - Government of The District of Columbia/Seamless Data/{i}.xlsx'.format(i = i), 
+                              index = False)           
             
 # Check whether limiting worked
 file_list = os.listdir('C:/Users/evan.kramer/OneDrive - Government of The District of Columbia/Seamless Data')
